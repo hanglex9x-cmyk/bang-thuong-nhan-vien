@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Bảng Thưởng Nhân Viên — Xe Trắng · Xe Xanh · Xe Máy · Thưởng Nóng</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0b2440;--navy2:#12365e;--teal:#0e7c6b;--teal2:#0a5f52;--orange:#f26a1b;--bg:#eef1f5;--card:#fff;--mut:#64748b;--line:#dde3ea;--blue:#e8f0f8;--hot:#fff1e8;--green:#e6f4ec}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:#16283c;font-size:15px}
+header{background:var(--navy);color:#fff;padding:14px 16px 10px;position:sticky;top:0;z-index:30}
+header h1{font-size:17px;letter-spacing:.3px;text-align:center}
+header .sub{text-align:center;color:#bcd0e6;font-size:12px;margin-top:4px}
+.cfg{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.cfg label{background:var(--navy2);border-radius:8px;padding:5px 8px;font-size:12px;color:#bcd0e6;display:flex;gap:6px;align-items:center}
+.cfg input,.cfg select{background:#fffbe8;border:1px solid #e5d48a;border-radius:6px;padding:3px 6px;font-weight:700;width:86px;text-align:center}
+.cfg input[type=month]{width:140px}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:96px;z-index:20}
+nav.tabs button{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 13px;font-weight:600;cursor:pointer;font-size:14px}
+nav.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+main{max-width:1180px;margin:0 auto;padding:14px 12px 90px}
+.page{display:none}.page.on{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.card{background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:0 1px 3px rgba(16,40,70,.08)}
+.card .k{font-size:12px;color:var(--mut);font-weight:700;text-transform:uppercase}
+.card .v{font-size:21px;font-weight:800;margin-top:4px}
+.card.total{background:var(--teal);color:#fff}.card.total .k{color:#cdeee7}
+.tblwrap{background:#fff;border-radius:14px;overflow-x:auto;box-shadow:0 1px 3px rgba(16,40,70,.08);margin-bottom:14px}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th,td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:right;font-size:13.5px;white-space:nowrap}
+th{background:var(--navy2);color:#fff;text-align:right;font-size:12.5px}
+th:first-child,td:first-child{text-align:left}
+th.c,td.c{text-align:center}
+tr.tot td{background:#fff7d6;font-weight:800}
+tr.grand td{background:var(--teal);color:#fff;font-weight:800}
+.note{font-size:13px;color:var(--mut);background:#fff;border:1px dashed var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px;line-height:1.55}
+.boardhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 10px}
+.boardhead h2{font-size:17px}
+.btn{background:var(--orange);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer;font-size:14px}
+.btn.navy{background:var(--navy)}.btn.teal{background:var(--teal)}.btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn.sm{padding:6px 10px;font-size:12.5px;border-radius:8px}
+form.entry{background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 4px rgba(16,40,70,.1);max-width:680px;margin:0 auto}
+form.entry h2{margin-bottom:12px;font-size:17px}
+.f{margin-bottom:12px}
+.f label{display:block;font-weight:700;font-size:13px;margin-bottom:5px}
+.f label .req{color:#dc2626}
+.f input,.f select,.f textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:#fbfcfe}
+.f textarea{rows:2}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:100px;padding:10px 6px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-weight:700;cursor:pointer;font-size:13.5px}
+.seg button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.seg button.on.hot{background:var(--orange);border-color:var(--orange)}
+.checks{display:flex;gap:8px;flex-wrap:wrap}
+.checks label{display:flex;gap:6px;align-items:center;background:var(--blue);padding:9px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.checks input{width:18px;height:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+.hint{font-size:12.5px;color:var(--mut);margin-top:4px;line-height:1.45}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:700;background:var(--blue);color:var(--navy2)}
+.tag.hot{background:var(--hot);color:#b34700}.tag.g{background:#e2e8f0;color:#475569}
+.del{color:#dc2626;background:none;border:none;cursor:pointer;font-weight:700}
+.edit{color:var(--teal2);background:none;border:none;cursor:pointer;font-weight:700;margin-right:8px}
+.empty{padding:26px;text-align:center;color:var(--mut)}
+.kho{font-weight:700;color:#b34700}
+footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:10px 12px;display:flex;gap:8px;justify-content:center;z-index:30}
+@media print{header,nav.tabs,footer,.no-print{display:none!important}main{padding:0}.page{display:none}.page#printpage{display:block}}
+</style>
+</head>
+<body>
+<header>
+  <h1>BẢNG THEO DÕI DOANH THU &amp; TÍNH THƯỞNG NHÂN VIÊN</h1>
+  <div class="sub">Nhập 1 lần từng đơn (bán cho ai · quyển kho số mấy) → tự chảy vào Bảng Xe Trắng · Xe Xanh · Xe Máy (kho) · Thưởng nóng · Bảng chính của khách</div>
+  <div class="cfg">
+    <label>THÁNG <input type="month" id="cfgMonth"></label>
+    <label>TỶ LỆ THƯỞNG <input id="cfgRate" type="number" step="0.1" min="0"> %</label>
+    <label>HÀNG A <input id="cfgRateA" type="number" step="0.1" min="0"> %</label>
+    <label>HÀNG G <input id="cfgRateG" type="number" step="0.1" min="0"> %</label>
+    <label>HÀNG D <input id="cfgRateD" type="number" step="0.1" min="0"> %</label>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-p="main" class="on">📋 Bảng chính</button>
+  <button data-p="trang">🚐 Xe Trắng</button>
+  <button data-p="xanh">🚐 Xe Xanh</button>
+  <button data-p="xemay">🛵 Xe máy (kho)</button>
+  <button data-p="nong">🔥 Thưởng nóng</button>
+  <button data-p="all">📒 Tất cả đơn</button>
+  <button data-p="set">⚙️ Cài đặt</button>
+</nav>
+
+<main>
+  <!-- BẢNG CHÍNH -->
+  <section class="page on" id="p-main">
+    <div class="cards" id="nvCards"></div>
+    <div class="note">Cách tính: Thưởng NV = [(Doanh thu xe ÷ số người đi cùng xe) − phần hàng G] × <b id="noteRate"></b> + phần hàng G × <b id="noteRateG"></b> + doanh thu ngoài xe (xe máy + báo đơn) × tỷ lệ + Hàng A × <b id="noteRateA"></b> + Hàng D × <b id="noteRateD"></b> + Hàng N × <b id="notePriceN"></b> + khách mới × <b id="notePriceKM"></b>. Cả tháng không mở được khách mới nào: trừ <b id="notePenalty"></b> ở tổng kết cuối tháng (số trên thẻ đang là tạm tính trong tháng).</div>
+    <div class="boardhead"><h2>Theo ngày trong tháng</h2><button class="btn navy sm no-print" onclick="window.print()">🖨 In tổng kết</button></div>
+    <div class="tblwrap"><table id="dailyTbl"></table></div>
+    <div class="boardhead"><h2>Tổng kết thưởng cuối tháng</h2></div>
+    <div class="tblwrap"><table id="sumTbl"></table></div>
+  </section>
+
+  <!-- CÁC BẢNG CON -->
+  <section class="page" id="p-board">
+    <div class="boardhead"><h2 id="boardTitle"></h2><button class="btn" onclick="openEntry()">+ Nhập đơn</button></div>
+    <div class="cards" id="boardCards"></div>
+    <div class="tblwrap"><table id="boardTbl"></table></div>
+  </section>
+
+  <!-- TẤT CẢ ĐƠN -->
+  <section class="page" id="p-all">
+    <div class="boardhead"><h2>Tất cả đơn trong tháng</h2><div><button class="btn teal sm" onclick="exportCSV()">⬇ Xuất CSV</button> <button class="btn" onclick="openEntry()">+ Nhập đơn</button></div></div>
+    <div class="tblwrap"><table id="allTbl"></table></div>
+  </section>
+
+  <!-- NHẬP ĐƠN -->
+  <section class="page" id="p-entry">
+    <form class="entry" id="entryForm">
+      <h2 id="entryTitle">Nhập đơn mới</h2>
+      <input type="hidden" id="fId">
+      <div class="f"><label>Loại bảng <span class="req">*</span></label>
+        <div class="seg" id="fBoardSeg">
+          <button type="button" data-b="trang">🚐 Xe Trắng</button>
+          <button type="button" data-b="xanh">🚐 Xe Xanh</button>
+          <button type="button" data-b="xemay">🛵 Xe máy (kho)</button>
+          <button type="button" data-b="baodon">📣 Báo đơn / thị trường</button>
+          <button type="button" data-b="nong" class="hotb">🔥 Thưởng nóng</button>
+        </div>
+        <div class="hint">Xe Trắng / Xe Xanh: chọn tất cả NV đi cùng xe, tiền tự chia đều. Xe máy / Báo đơn: đi 1 người, tính riêng. Thưởng nóng: đơn chỉ tính thưởng nóng (Hàng A/D/N), không tính % giao hàng.</div>
+      </div>
+      <div class="grid2">
+        <div class="f"><label>Ngày <span class="req">*</span></label><input type="date" id="fDate" required></div>
+        <div class="f"><label>Người bán (tính thưởng nóng + khách mới)</label><select id="fSeller"></select></div>
+      </div>
+      <div class="f"><label>NV tham gia đi giao / đi cùng xe <span class="req">*</span></label><div class="checks" id="fParts"></div></div>
+      <div class="grid2">
+        <div class="f"><label>Bán cho ai — tên khách hàng <span class="req">*</span></label><input id="fCustomer" placeholder="VD: Tạp hóa Cô Lan" required></div>
+        <div class="f"><label>Quyển kho số mấy <span class="req">*</span></label><input id="fBook" placeholder="VD: Quyển 3" required></div>
+      </div>
+      <div class="grid2">
+        <div class="f"><label>Mặt hàng</label><select id="fItem">
+          <option value="thuong">Hàng thường</option><option value="A">Hàng A — thưởng nóng 7%</option>
+          <option value="G">Hàng G — lợi nhuận thấp, chỉ 0,3%</option><option value="D">Hàng D — thưởng nóng 0,3%</option>
+          <option value="N">Hàng N — 50.000đ/cái</option></select></div>
+        <div class="f"><label>Số đơn / số phiếu (nếu có)</label><input id="fCode" placeholder="VD: Đ.123"></div>
+      </div>
+      <div class="grid2">
+        <div class="f"><label>Doanh số đơn (đ) <span class="req">*</span></label><input id="fAmount" type="number" min="0" step="1000" placeholder="0" required></div>
+        <div class="f"><label>Số lượng (chỉ dùng cho Hàng N)</label><input id="fQty" type="number" min="0" step="1" value="1"></div>
+      </div>
+      <div class="f"><label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="fNewCust" style="width:19px;height:19px"> Đây là khách MỚI và phát sinh đơn ngay (+200.000đ cho người bán)</label></div>
+      <div class="f"><label>Ghi chú</label><textarea id="fNote" rows="2" placeholder="Khu vực giao, tình trạng đơn..."></textarea></div>
+      <div style="display:flex;gap:8px"><button type="submit" class="btn" style="flex:1">💾 Lưu đơn</button><button type="button" class="btn ghost" onclick="go(lastPage)">Huỷ</button></div>
+    </form>
+  </section>
+
+  <!-- CÀI ĐẶT -->
+  <section class="page" id="p-set">
+    <form class="entry" id="setForm">
+      <h2>Cài đặt</h2>
+      <div class="f"><label>Tên nhân viên (mỗi người 1 dòng)</label><textarea id="sNames" rows="4"></textarea><div class="hint">Đổi NV1/NV2/NV3 thành tên thật ở đây — toàn bộ bảng tự đổi theo. Thêm người: gõ thêm 1 dòng.</div></div>
+      <div class="grid2">
+        <div class="f"><label>Thưởng Hàng N (đ/cái)</label><input id="sPriceN" type="number" min="0" step="1000"></div>
+        <div class="f"><label>Thưởng 1 khách mới (đ)</label><input id="sPriceKM" type="number" min="0" step="1000"></div>
+      </div>
+      <div class="grid2">
+        <div class="f"><label>Trừ nếu cả tháng không mở được khách mới (đ)</label><input id="sPenalty" type="number" min="0" step="1000"></div>
+        <div class="f"><label>&nbsp;</label><button type="submit" class="btn navy" style="width:100%">💾 Lưu cài đặt</button></div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--line);margin:14px 0">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="btn ghost sm" onclick="loadDemo(true)">Nạp lại dữ liệu mẫu</button>
+        <button type="button" class="btn ghost sm" onclick="clearAll()">Xoá toàn bộ đơn</button>
+      </div>
+      <div class="hint" style="margin-top:10px">Bản demo này lưu dữ liệu ngay trên máy đang dùng (trình duyệt). Khi chốt dùng thật, dữ liệu sẽ chuyển lên Google Sheet của khách như các app trước — mỗi đơn vẫn giữ nguyên khách hàng + quyển kho để đối chiếu sổ giấy.</div>
+    </form>
+  </section>
+</main>
+
+<footer>
+  <button class="btn" style="flex:1;max-width:420px" onclick="openEntry()">+ NHẬP ĐƠN MỚI</button>
+</footer>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const fmt=n=>Math.round(n||0).toLocaleString('vi-VN')+'đ';
+const BOARD={trang:'Xe Trắng',xanh:'Xe Xanh',xemay:'Xe máy (kho)',baodon:'Báo đơn / thị trường',nong:'Thưởng nóng'};
+const ITEM={thuong:'Thường',A:'Hàng A',G:'Hàng G',D:'Hàng D',N:'Hàng N'};
+let cfg=JSON.parse(localStorage.getItem('bt_cfg')||'null')||{month:new Date().toISOString().slice(0,7),rate:0.6,rateA:7,rateG:0.3,rateD:0.3,priceN:50000,priceKM:200000,penalty:200000,names:['NV1','NV2','NV3']};
+let recs=JSON.parse(localStorage.getItem('bt_recs')||'null');
+function save(){localStorage.setItem('bt_cfg',JSON.stringify(cfg));localStorage.setItem('bt_recs',JSON.stringify(recs))}
+function uid(){return 'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function loadDemo(manual){
+  recs=[
+   {id:uid(),date:cfg.month+'-01',board:'trang',parts:[0,1],seller:0,customer:'Khách mẫu — Cửa hàng Minh Khai',book:'Quyển 1',item:'thuong',code:'Đ.001',amount:10000000,qty:1,newCust:false,note:'Ví dụ ngày 1 trong mẫu của khách: 2 người đi Xe Trắng 10tr'},
+   {id:uid(),date:cfg.month+'-01',board:'xemay',parts:[2],seller:2,customer:'Khách mẫu — Tạp hóa Cô Lan',book:'Quyển 1',item:'thuong',code:'Đ.002',amount:2000000,qty:1,newCust:false,note:'NV3 bán riêng ngoài xe 2tr'},
+   {id:uid(),date:cfg.month+'-01',board:'nong',parts:[0],seller:0,customer:'Khách mẫu — Anh Tuấn',book:'Quyển 1',item:'A',code:'Đ.003',amount:10000,qty:1,newCust:false,note:'Hàng A bán 10.000đ → thưởng nóng 700đ'},
+   {id:uid(),date:cfg.month+'-02',board:'trang',parts:[0,1],seller:0,customer:'Khách mẫu — Siêu thị mini An Phát',book:'Quyển 1',item:'G',code:'Đ.004',amount:10000000,qty:1,newCust:true,note:'Đơn có hàng G (chỉ tính 0,3%) + khách mới phát sinh đơn ngay'},
+   {id:uid(),date:cfg.month+'-02',board:'nong',parts:[2],seller:2,customer:'Khách mẫu — Chị Hoa',book:'Quyển 2',item:'N',code:'Đ.005',amount:0,qty:2,newCust:false,note:'Bán 2 cái Hàng N → 100.000đ'},
+  ]; save(); render(); if(manual)alert('Đã nạp dữ liệu mẫu.');
+}
+if(!recs) loadDemo(false);
+
+/* ---------- TÍNH THƯỞNG ---------- */
+// Trả về {perNV: Map nvIdx -> {xe,ngoai,base,hotA,hotD,hotN,kmCount}, total} cho 1 đơn
+function calcRec(r){
+  const out={}; const add=(i,k,v)=>{out[i]=out[i]||{xe:0,ngoai:0,base:0,hotA:0,hotD:0,hotN:0,km:0};out[i][k]+=v};
+  const n=Math.max(1,(r.parts||[]).length);
+  if(r.board==='trang'||r.board==='xanh'){
+    const share=(r.amount||0)/n, rate=(r.item==='G'?cfg.rateG:cfg.rate)/100;
+    r.parts.forEach(i=>{add(i,'xe',share);add(i,'base',share*rate)});
+  }else if(r.board==='xemay'||r.board==='baodon'){
+    const rate=(r.item==='G'?cfg.rateG:cfg.rate)/100;
+    r.parts.forEach(i=>{add(i,'ngoai',r.amount||0);add(i,'base',(r.amount||0)*rate)});
+  }
+  // Thưởng nóng cho người bán (cộng thêm trên mọi loại bảng)
+  const s=r.seller;
+  if(r.item==='A') add(s,'hotA',(r.amount||0)*cfg.rateA/100);
+  if(r.item==='D') add(s,'hotD',(r.amount||0)*cfg.rateD/100);
+  if(r.item==='N') add(s,'hotN',(r.qty||0)*cfg.priceN);
+  if(r.newCust) add(s,'km',1);
+  return out;
+}
+function monthRecs(){return recs.filter(r=>r.date&&r.date.startsWith(cfg.month))}
+function summarize(){
+  const S=cfg.names.map(()=>({xe:0,ngoai:0,base:0,hotA:0,hotD:0,hotN:0,km:0}));
+  monthRecs().forEach(r=>{const o=calcRec(r);Object.entries(o).forEach(([i,v])=>{if(S[i])Object.keys(v).forEach(k=>S[i][k]+=v[k])})});
+  S.forEach(s=>{s.kmBonus=s.km>0?s.km*cfg.priceKM:-cfg.penalty;s.total=s.base+s.hotA+s.hotD+s.hotN+s.kmBonus});
+  return S;
+}
+function recBonusTotal(r){const o=calcRec(r);return Object.values(o).reduce((t,v)=>t+v.base+v.hotA+v.hotD+v.hotN,0)+(r.newCust?cfg.priceKM:0)}
+
+/* ---------- RENDER ---------- */
+let lastPage='main', curBoard='trang';
+function go(p){
+  lastPage=p;
+  $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.p===p||(p==='board'&&b.dataset.p===curBoard)));
+  $$('.page').forEach(x=>x.classList.remove('on'));
+  if(p==='board'){$('#p-board').classList.add('on');renderBoard()}
+  else if(p==='main'){$('#p-main').classList.add('on');renderMain()}
+  else if(p==='all'){$('#p-all').classList.add('on');renderAll()}
+  else if(p==='entry'){$('#p-entry').classList.add('on')}
+  else if(p==='set'){$('#p-set').classList.add('on');fillSettings()}
+  window.scrollTo({top:0});
+}
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const p=b.dataset.p;
+  if(['trang','xanh','xemay','nong'].includes(p)){curBoard=p;go('board')}else go(p)});
+
+function renderMain(){
+  const S=summarize();
+  $('#nvCards').innerHTML=S.map((s,i)=>`<div class="card"><div class="k">${cfg.names[i]} • Tổng thưởng</div><div class="v">${fmt(s.total)}</div></div>`).join('')
+    +`<div class="card total"><div class="k">Tổng thưởng cả nhóm</div><div class="v">${fmt(S.reduce((t,s)=>t+s.total,0))}</div></div>`;
+  $('#noteRate').textContent=cfg.rate+'%';$('#noteRateG').textContent=cfg.rateG+'%';$('#noteRateA').textContent=cfg.rateA+'%';$('#noteRateD').textContent=cfg.rateD+'%';
+  $('#notePriceN').textContent=fmt(cfg.priceN);$('#notePriceKM').textContent=fmt(cfg.priceKM);$('#notePenalty').textContent=fmt(cfg.penalty);
+  // Theo ngày
+  const days=new Date(cfg.month.slice(0,4),+cfg.month.slice(5,7),0).getDate();
+  let h='<tr><th>Ngày</th><th>Xe Trắng (đ)</th><th>Xe Xanh (đ)</th><th>Xe máy + Báo đơn (đ)</th>'+cfg.names.map(n=>`<th>${n} — Thưởng ngày (đ)</th>`).join('')+'<th>Tổng thưởng ngày (đ)</th></tr>';
+  const mr=monthRecs();
+  for(let d=1;d<=days;d++){
+    const ds=cfg.month+'-'+String(d).padStart(2,'0'), dr=mr.filter(r=>r.date===ds);
+    const sumB=b=>dr.filter(r=>r.board===b).reduce((t,r)=>t+(r.amount||0),0);
+    const per=cfg.names.map((_,i)=>dr.reduce((t,r)=>{const o=calcRec(r)[i];return t+(o?o.base+o.hotA+o.hotD+o.hotN:0)},0)+(dr.some(r=>r.newCust&&r.seller===i)?cfg.priceKM:0));
+    h+=`<tr><td>${String(d).padStart(2,'0')}/${cfg.month.slice(5,7)}</td><td>${fmt(sumB('trang'))}</td><td>${fmt(sumB('xanh'))}</td><td>${fmt(sumB('xemay')+sumB('baodon'))}</td>${per.map(v=>`<td>${fmt(v)}</td>`).join('')}<td><b>${fmt(per.reduce((a,b)=>a+b,0))}</b></td></tr>`;
+  }
+  h+=`<tr class="tot"><td>TỔNG THÁNG</td><td>${fmt(mr.filter(r=>r.board==='trang').reduce((t,r)=>t+r.amount,0))}</td><td>${fmt(mr.filter(r=>r.board==='xanh').reduce((t,r)=>t+r.amount,0))}</td><td>${fmt(mr.filter(r=>['xemay','baodon'].includes(r.board)).reduce((t,r)=>t+r.amount,0))}</td>${cfg.names.map((_,i)=>`<td>${fmt(S[i].base+S[i].hotA+S[i].hotD+S[i].hotN+(S[i].km>0?S[i].km*cfg.priceKM:0))}</td>`).join('')}<td>${fmt(S.reduce((t,s)=>t+s.base+s.hotA+s.hotD+s.hotN+(s.km>0?s.km*cfg.priceKM:0),0))}</td></tr>`;
+  $('#dailyTbl').innerHTML=h;
+  // Tổng kết
+  let s='<tr><th>Nhân viên</th><th>DT xe được chia (đ)</th><th>DT ngoài xe (đ)</th><th>Thưởng xe + ngoài xe (đ)</th><th>Thưởng nóng Hàng A (đ)</th><th>Thưởng nóng Hàng D (đ)</th><th>Thưởng Hàng N (đ)</th><th>Số khách mới</th><th>Thưởng / Trừ khách mới (đ)</th><th>TỔNG THƯỞNG (đ)</th></tr>';
+  S.forEach((x,i)=>{s+=`<tr><td><b>${cfg.names[i]}</b></td><td>${fmt(x.xe)}</td><td>${fmt(x.ngoai)}</td><td>${fmt(x.base)}</td><td>${fmt(x.hotA)}</td><td>${fmt(x.hotD)}</td><td>${fmt(x.hotN)}</td><td class="c">${x.km}</td><td>${fmt(x.kmBonus)}</td><td><b>${fmt(x.total)}</b></td></tr>`});
+  s+=`<tr class="grand"><td colspan="9">TỔNG CHI THƯỞNG ${S.length} NHÂN VIÊN</td><td>${fmt(S.reduce((t,x)=>t+x.total,0))}</td></tr>`;
+  $('#sumTbl').innerHTML=s;
+}
+function recRow(r,showBoard){
+  const parts=(r.parts||[]).map(i=>cfg.names[i]).join(' + ');
+  return `<tr><td>${r.date.slice(8,10)}/${r.date.slice(5,7)}</td>${showBoard?`<td><span class="tag ${r.board==='nong'?'hot':''}">${BOARD[r.board]}</span></td>`:''}<td>${parts}</td><td>${cfg.names[r.seller]||''}</td><td><b>${r.customer}</b>${r.code?' · '+r.code:''}</td><td class="kho">${r.book}</td><td><span class="tag ${r.item!=='thuong'?'hot':'g'}">${ITEM[r.item]}</span></td><td>${fmt(r.amount)}</td><td class="c">${r.item==='N'?r.qty:''}</td><td>${r.newCust?'<span class="tag hot">Khách mới +'+fmt(cfg.priceKM)+'</span>':''}</td><td><b>${fmt(recBonusTotal(r))}</b></td><td>${r.note||''}</td><td class="no-print"><button class="edit" onclick="editRec('${r.id}')">Sửa</button><button class="del" onclick="delRec('${r.id}')">Xoá</button></td></tr>`;
+}
+const TBLHEAD=showBoard=>`<tr><th>Ngày</th>${showBoard?'<th>Bảng</th>':''}<th>NV tham gia</th><th>Người bán</th><th>Bán cho ai</th><th>Quyển kho</th><th>Mặt hàng</th><th>Doanh số (đ)</th><th>SL</th><th>Khách mới</th><th>Thưởng đơn này (đ)</th><th>Ghi chú</th><th></th></tr>`;
+function renderBoard(){
+  const titles={trang:'Bảng 1 — Xe Trắng',xanh:'Bảng 2 — Xe Xanh',xemay:'Bảng 3 — Đi xe máy (kho)',nong:'Bảng 4 — Các đơn thưởng nóng'};
+  $('#boardTitle').textContent=titles[curBoard];
+  let list=monthRecs().filter(r=>curBoard==='nong'?(r.board==='nong'||(r.item!=='thuong'&&r.board!=='nong')):r.board===curBoard);
+  list.sort((a,b)=>a.date.localeCompare(b.date));
+  $('#boardCards').innerHTML=`<div class="card"><div class="k">Số đơn</div><div class="v">${list.length}</div></div><div class="card"><div class="k">Tổng doanh số</div><div class="v">${fmt(list.reduce((t,r)=>t+(r.amount||0),0))}</div></div><div class="card total"><div class="k">Tổng thưởng phát sinh</div><div class="v">${fmt(list.reduce((t,r)=>t+recBonusTotal(r),0))}</div></div>`;
+  $('#boardTbl').innerHTML=TBLHEAD(false)+(list.length?list.map(r=>recRow(r,false)).join(''):'<tr><td colspan="12" class="empty">Chưa có đơn nào trong tháng này. Bấm “+ Nhập đơn” để thêm.</td></tr>');
+}
+function renderAll(){
+  const list=monthRecs().slice().sort((a,b)=>a.date.localeCompare(b.date));
+  $('#allTbl').innerHTML=TBLHEAD(true)+(list.length?list.map(r=>recRow(r,true)).join(''):'<tr><td colspan="13" class="empty">Chưa có đơn nào.</td></tr>');
+}
+function render(){renderMain()}
+
+/* ---------- NHẬP / SỬA / XOÁ ---------- */
+let entryBoard='trang';
+$('#fBoardSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;entryBoard=b.dataset.b;$$('#fBoardSeg button').forEach(x=>x.classList.toggle('on',x===b))});
+function fillPartChecks(sel){
+  $('#fParts').innerHTML=cfg.names.map((n,i)=>`<label><input type="checkbox" value="${i}" ${sel.includes(i)?'checked':''}> ${n}</label>`).join('');
+  $('#fSeller').innerHTML=cfg.names.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+}
+function openEntry(pref){
+  $('#entryForm').reset();$('#fId').value='';$('#entryTitle').textContent='Nhập đơn mới';
+  entryBoard=pref||(lastPage==='board'?curBoard:'trang');
+  $$('#fBoardSeg button').forEach(x=>x.classList.toggle('on',x.dataset.b===entryBoard));
+  $('#fDate').value=(cfg.month===new Date().toISOString().slice(0,7)?new Date().toISOString().slice(0,10):cfg.month+'-01');
+  fillPartChecks([]);$('#fQty').value=1;go('entry');
+}
+function editRec(id){
+  const r=recs.find(x=>x.id===id);if(!r)return;
+  openEntry(r.board);$('#fId').value=id;$('#entryTitle').textContent='Sửa đơn';
+  entryBoard=r.board;$$('#fBoardSeg button').forEach(x=>x.classList.toggle('on',x.dataset.b===r.board));
+  $('#fDate').value=r.date;fillPartChecks(r.parts||[]);$('#fSeller').value=r.seller;
+  $('#fCustomer').value=r.customer;$('#fBook').value=r.book;$('#fItem').value=r.item;$('#fCode').value=r.code||'';
+  $('#fAmount').value=r.amount;$('#fQty').value=r.qty||1;$('#fNewCust').checked=!!r.newCust;$('#fNote').value=r.note||'';
+}
+function delRec(id){if(!confirm('Xoá đơn này?'))return;recs=recs.filter(x=>x.id!==id);save();go(lastPage==='entry'?'all':lastPage)}
+$('#entryForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const parts=$$('#fParts input:checked').map(x=>+x.value);
+  if(!parts.length){alert('Chưa chọn NV tham gia.');return}
+  if(!$('#fCustomer').value.trim()||!$('#fBook').value.trim()){alert('Phải note rõ: bán cho ai + quyển kho số mấy.');return}
+  const r={id:$('#fId').value||uid(),date:$('#fDate').value,board:entryBoard,parts,seller:+$('#fSeller').value,
+    customer:$('#fCustomer').value.trim(),book:$('#fBook').value.trim(),item:$('#fItem').value,code:$('#fCode').value.trim(),
+    amount:+$('#fAmount').value||0,qty:+$('#fQty').value||0,newCust:$('#fNewCust').checked,note:$('#fNote').value.trim()};
+  const ix=recs.findIndex(x=>x.id===r.id); if(ix>=0)recs[ix]=r; else recs.push(r);
+  save(); go(r.board==='nong'?'board':( ['trang','xanh','xemay'].includes(r.board)?'board':'all')); if(['trang','xanh','xemay','nong'].includes(r.board)){curBoard=r.board==='baodon'?'xemay':r.board;go('board')}
+});
+
+/* ---------- CÀI ĐẶT / CẤU HÌNH ---------- */
+function fillSettings(){$('#sNames').value=cfg.names.join('\n');$('#sPriceN').value=cfg.priceN;$('#sPriceKM').value=cfg.priceKM;$('#sPenalty').value=cfg.penalty}
+$('#setForm').addEventListener('submit',e=>{e.preventDefault();
+  const names=$('#sNames').value.split('\n').map(x=>x.trim()).filter(Boolean); if(names.length)cfg.names=names;
+  cfg.priceN=+$('#sPriceN').value||0;cfg.priceKM=+$('#sPriceKM').value||0;cfg.penalty=+$('#sPenalty').value||0;save();render();alert('Đã lưu cài đặt.');go('main')});
+function bindCfg(){
+  $('#cfgMonth').value=cfg.month;$('#cfgRate').value=cfg.rate;$('#cfgRateA').value=cfg.rateA;$('#cfgRateG').value=cfg.rateG;$('#cfgRateD').value=cfg.rateD;
+  $('#cfgMonth').onchange=e=>{cfg.month=e.target.value;save();render();if(lastPage==='board')renderBoard();if(lastPage==='all')renderAll()};
+  const m=(id,k)=>{$(id).onchange=e=>{cfg[k]=+e.target.value||0;save();render()}};
+  m('#cfgRate','rate');m('#cfgRateA','rateA');m('#cfgRateG','rateG');m('#cfgRateD','rateD');
+}
+function clearAll(){if(!confirm('Xoá toàn bộ đơn?'))return;recs=[];save();render();go('main')}
+function exportCSV(){
+  const rows=[['Ngay','Bang','NV tham gia','Nguoi ban','Ban cho ai','Quyen kho','Mat hang','Doanh so','So luong','Khach moi','Thuong don nay','Ghi chu']];
+  monthRecs().forEach(r=>rows.push([r.date,BOARD[r.board],(r.parts||[]).map(i=>cfg.names[i]).join(' + '),cfg.names[r.seller],r.customer,r.book,ITEM[r.item],r.amount,r.qty,r.newCust?'Co':'',recBonusTotal(r),r.note||'']));
+  const csv='\ufeff'+rows.map(x=>x.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='bang-thuong-'+cfg.month+'.csv';a.click();
+}
+bindCfg();render();
+</script>
+</body>
+</html>
